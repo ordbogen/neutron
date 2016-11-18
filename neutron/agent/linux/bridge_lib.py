@@ -24,6 +24,7 @@ from neutron.agent.linux import ip_lib
 # devices are listed here (i.e. when using Xen)
 BRIDGE_FS = "/sys/class/net/"
 BRIDGE_PORT_FS_FOR_DEVICE = BRIDGE_FS + "%s/brport"
+BRIDGE_FS_FOR_DEVICE_SETTING = BRIDGE_FS + "%s/bridge/%s"
 
 
 def get_interface_bridged_time(interface):
@@ -59,3 +60,14 @@ class BridgeDevice(ip_lib.IPDevice):
 
     def disable_stp(self):
         return self._brctl(['stp', self.name, 'off'])
+
+    def _sysfs(self, name, value):
+        try:
+            f = open(BRIDGE_FS_FOR_DEVICE_SETTING % (self.name, name), 'w')
+            f.write(value)
+            f.close()
+        except Exception:
+            pass
+
+    def enable_vlan_filter(self):
+        self._sysfs('vlan_filtering', '1')

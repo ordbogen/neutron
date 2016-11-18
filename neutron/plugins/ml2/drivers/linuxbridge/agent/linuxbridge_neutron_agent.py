@@ -402,6 +402,7 @@ class LinuxBridgeManager(object):
                 return
             if bridge_device.disable_ipv6():
                 return
+            bridge_device.enable_vlan_filter()
             if bridge_device.link.set_up():
                 return
             LOG.debug("Done starting bridge %(bridge_name)s for "
